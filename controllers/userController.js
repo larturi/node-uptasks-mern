@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import generarHashUser from '../helpers/generarHashUser.js';
 
 const registerUser = async(req, res) => {
     const { email } = req.body;
@@ -11,6 +12,7 @@ const registerUser = async(req, res) => {
 
     try {
         const user = new User(req.body);
+        user.token = await generarHashUser();
         const newUser = await user.save();
         res.json(newUser);
     } catch (error) {
