@@ -71,8 +71,61 @@ const confirmUser = async(req, res) => {
     }
 }
 
+const recoveryPassword = async(req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        const error = new Error('User not found');
+        return res.status(400).json({ msg: error.message });
+    }
+
+    try {
+        user.token = await generarHashUser();
+        await user.save();
+        res.json({ msg: 'Email sent' });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const verifyToken = async(req, res) => {
+    const { token } = req.params;
+    const user = await User.findOne({ token });
+    if (!user) {
+        const error = new Error('Invalid token');
+        return res.status(400).json({ msg: error.message });
+    }
+
+    res.json({ msg: 'Token valid' });
+}
+
+const newPassword = async(req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const user = await User.findOne({ token });
+    if (!user) {
+        const error = new Error('Invalid token');
+        return res.status(400).json({ msg: error.message });
+    }
+
+    user.password = password;
+    user.token = '';
+
+    try {
+        user.save();
+        res.json({ msg: 'Password changed' });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export {
     registerUser,
     loginUser,
     confirmUser,
+    recoveryPassword,
+    verifyToken,
+    newPassword,
 }
