@@ -6,7 +6,15 @@ const getProjects = async(req, res) => {
 }
 
 const newProject = async(req, res) => {
+    const project = new Project(req.body);
+    project.creador = req.user._id;
 
+    try {
+        const projectSaved = await project.save();
+        res.json(projectSaved);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 const getProject = async(req, res) => {

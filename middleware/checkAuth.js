@@ -19,6 +19,8 @@ const checkAuth = async(req, res, next) => {
     if (!token) {
         return res.status(401).json({ msg: 'No token provided' });
     }
+
+    next();
 }
 
 export default checkAuth;
