@@ -39,84 +39,74 @@ const newTask = async(req, res) => {
 }
 
 const getTask = async(req, res) => {
-    // const id = req.params.id;
+    const id = req.params.id;
 
-    // if (id.length < 24) {
-    //     const error = new Error('Invalid id');
-    //     return res.status(404).json({ msg: error.message });
-    // }
+    if (id.length < 24) {
+        const error = new Error('Invalid id');
+        return res.status(404).json({ msg: error.message });
+    }
 
-    // const project = await Project.findById(id);
+    const task = await Task.findById(id).populate('proyecto');
 
-    // if (!project) {
-    //     const error = new Error('Project not found');
-    //     return res.status(404).json({ msg: error.message });
-    // }
+    if (!task) {
+        const error = new Error('Task not found');
+        return res.status(404).json({ msg: error.message });
+    }
 
-    // if (project.creador.toString() !== req.user._id.toString()) {
-    //     const error = new Error('Not authorized');
-    //     return res.status(401).json({ msg: error.message });
-    // }
-
-    // res.json(project);
+    res.json(task);
 }
 
 const editTask = async(req, res) => {
-    // const id = req.params.id;
+    const id = req.params.id;
 
-    // if (id.length < 24) {
-    //     const error = new Error('Invalid id');
-    //     return res.status(404).json({ msg: error.message });
-    // }
+    if (id.length < 24) {
+        const error = new Error('Invalid id');
+        return res.status(404).json({ msg: error.message });
+    }
 
-    // const project = await Project.findById(id);
+    const task = await Task.findById(id).populate('proyecto');
 
-    // if (!project) {
-    //     const error = new Error('Project not found');
-    //     return res.status(404).json({ msg: error.message });
-    // }
+    if (!task) {
+        const error = new Error('Task not found');
+        return res.status(404).json({ msg: error.message });
+    }
 
-    // if (project.creador.toString() !== req.user._id.toString()) {
-    //     const error = new Error('Not authorized');
-    //     return res.status(401).json({ msg: error.message });
-    // }
+    task.nombre = req.body.nombre || task.nombre;
+    task.descripcion = req.body.descripcion || task.descripcion;
+    task.prioridad = req.body.prioridad || task.prioridad;
+    task.fechaEntrega = req.body.fechaEntrega || task.fechaEntrega;
 
-    // project.nombre = req.body.nombre || project.nombre;
-    // project.descripcion = req.body.descripcion || project.descripcion;
-    // project.fechaEntrega = req.body.fechaEntrega || project.fechaEntrega;
-    // project.cliente = req.body.cliente || project.cliente;
-
-    // try {
-    //     const projectSaved = await project.save();
-    //     res.json(projectSaved);
-    // } catch (error) {
-    //     return res.status(400).json({ msg: error.message });
-    // }
+    try {
+        const taskSaved = await task.save();
+        res.json(taskSaved);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 const deleteTask = async(req, res) => {
-    // const id = req.params.id;
+    const id = req.params.id;
 
-    // if (id.length < 24) {
-    //     const error = new Error('Invalid id');
-    //     return res.status(404).json({ msg: error.message });
-    // }
+    if (id.length < 24) {
+        const error = new Error('Invalid id');
+        return res.status(404).json({ msg: error.message });
+    }
 
-    // const project = await Project.findById(id);
+    const task = await Task.findById(id);
 
-    // if (!project) {
-    //     const error = new Error('Project not found');
-    //     return res.status(404).json({ msg: error.message });
-    // }
+    if (!task) {
+        const error = new Error('Task not found');
+        return res.status(404).json({ msg: error.message });
+    }
 
-    // if (project.creador.toString() !== req.user._id.toString()) {
-    //     const error = new Error('Not authorized');
-    //     return res.status(401).json({ msg: error.message });
-    // }
+    if (task.creador.toString() !== req.user._id.toString()) {
+        const error = new Error('Not authorized');
+        return res.status(401).json({ msg: error.message });
+    }
 
-    // await project.remove();
+    await task.remove();
 
-    // res.json({ msg: 'Project deleted' });
+    res.json({ msg: 'Task deleted' });
 }
 
 const changeState = async(req, res) => {

@@ -1,4 +1,5 @@
 import Project from "../models/Project.js";
+import Task from "../models/Task.js";
 
 const getProjects = async(req, res) => {
     const projects = await Project.find().where('creador').equals(req.user._id).exec();
@@ -37,7 +38,14 @@ const getProject = async(req, res) => {
         return res.status(401).json({ msg: error.message });
     }
 
-    res.json(project);
+    const tasks = await Task.find().where('proyecto').equals(project._id).exec();
+
+    const response = {
+        project,
+        tasks
+    }
+
+    res.json(response);
 }
 
 const editProject = async(req, res) => {
@@ -106,10 +114,6 @@ const deleteColaborator = async(req, res) => {
 
 }
 
-const getTasks = async(req, res) => {
-
-}
-
 export {
     getProjects,
     newProject,
@@ -118,5 +122,4 @@ export {
     deleteProject,
     addColaborator,
     deleteColaborator,
-    getTasks,
 }
