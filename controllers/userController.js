@@ -15,6 +15,12 @@ const registerUser = async(req, res) => {
         const user = new User(req.body);
         user.token = await generarHashUser();
         const newUser = await user.save();
+
+        // Remove password from response
+        newUser.password = undefined;
+        newUser.token = undefined;
+        newUser.__v = undefined;
+
         res.json(newUser);
     } catch (error) {
         console.error(error);
