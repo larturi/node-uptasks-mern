@@ -17,6 +17,10 @@ const whiteList = [
 ];
 const corsOptions = {
     origin: (origin, callback) => {
+        if (!origin) { //for bypassing postman req with  no origin
+            return callback(null, true);
+        }
+
         if (whiteList.includes(origin)) {
             callback(null, true);
         } else {
