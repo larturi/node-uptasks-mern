@@ -13,7 +13,7 @@ connectDB();
 
 // CORS
 const whiteList = [
-    'http://localhost:3000',
+    process.env.FRONTEND_URL
 ];
 const corsOptions = {
     origin: (origin, callback) => {
