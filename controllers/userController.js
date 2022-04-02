@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import generarHashUser from '../helpers/generarHashUser.js';
 import generarJWT from '../helpers/generarJWT.js';
+import { emailRegister } from '../helpers/emails.js';
 
 const registerUser = async(req, res) => {
     const { email } = req.body;
@@ -15,6 +16,12 @@ const registerUser = async(req, res) => {
         const user = new User(req.body);
         user.token = await generarHashUser();
         const newUser = await user.save();
+
+        emailRegister({
+            email: newUser.email,
+            nombre: newUser.nombre,
+            token: newUser.token,
+        });
 
         // Remove password from response
         newUser.password = undefined;
