@@ -1,7 +1,7 @@
 import User from '../models/User.js';
 import generarHashUser from '../helpers/generarHashUser.js';
 import generarJWT from '../helpers/generarJWT.js';
-import { emailRegister } from '../helpers/emails.js';
+import { emailRegister, emailForgetPassword } from '../helpers/emails.js';
 
 const registerUser = async(req, res) => {
     const { email } = req.body;
@@ -96,6 +96,13 @@ const recoveryPassword = async(req, res) => {
     try {
         user.token = await generarHashUser();
         await user.save();
+
+        emailForgetPassword({
+            email: user.email,
+            nombre: user.nombre,
+            token: user.token,
+        });
+
         res.json({ msg: 'Email sent' });
     } catch (error) {
         console.error(error);
