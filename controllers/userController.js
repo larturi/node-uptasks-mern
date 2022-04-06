@@ -40,20 +40,20 @@ const loginUser = async(req, res) => {
 
     // Valido si existe el email
     if (!user) {
-        const error = new Error('User or password incorrect');
+        const error = new Error('El usuario no existe');
         return res.status(400).json({ msg: error.message });
     }
 
     // Valido si el password es correcto
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-        const error = new Error('User or password incorrect');
+        const error = new Error('Usuario y/o contraseña incorrectos');
         return res.status(400).json({ msg: error.message });
     }
 
     // Valido si esta confirmado
     if (!user.confirmed) {
-        const error = new Error('Account not confirmed');
+        const error = new Error('La cuenta no esta confirmada');
         return res.status(403).json({ msg: error.message });
     }
 
@@ -63,8 +63,7 @@ const loginUser = async(req, res) => {
         nombre: user.nombre,
         token: generarJWT(user._id),
     });
-
-}
+};
 
 const confirmUser = async(req, res) => {
     const { token } = req.params;
@@ -80,9 +79,9 @@ const confirmUser = async(req, res) => {
         await userConfirmed.save();
         res.json({ msg: 'Account confirmed' });
     } catch (error) {
-        console.error(error)
+        console.error(error);
     }
-}
+};
 
 const recoveryPassword = async(req, res) => {
     const { email } = req.body;
@@ -107,7 +106,7 @@ const recoveryPassword = async(req, res) => {
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 const verifyToken = async(req, res) => {
     const { token } = req.params;
@@ -118,7 +117,7 @@ const verifyToken = async(req, res) => {
     }
 
     res.json({ msg: 'Token valid' });
-}
+};
 
 const newPassword = async(req, res) => {
     const { token } = req.params;
@@ -139,12 +138,12 @@ const newPassword = async(req, res) => {
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 const profile = async(req, res) => {
     const { user } = req;
     res.json(user);
-}
+};
 
 export {
     registerUser,
@@ -154,4 +153,4 @@ export {
     verifyToken,
     newPassword,
     profile,
-}
+};
