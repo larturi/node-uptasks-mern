@@ -1,10 +1,14 @@
-import Project from "../models/Project.js";
-import Task from "../models/Task.js";
+import Project from '../models/Project.js';
+import Task from '../models/Task.js';
 
 const getProjects = async(req, res) => {
-    const projects = await Project.find().where('creador').equals(req.user._id).exec();
+    const projects = await Project.find()
+        .where('creador')
+        .equals(req.user._id)
+        .sort({ createdAt: -1 })
+        .exec();
     res.json(projects);
-}
+};
 
 const newProject = async(req, res) => {
     const project = new Project(req.body);
@@ -16,7 +20,7 @@ const newProject = async(req, res) => {
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 const getProject = async(req, res) => {
     const id = req.params.id;
@@ -38,15 +42,8 @@ const getProject = async(req, res) => {
         return res.status(401).json({ msg: error.message });
     }
 
-    const tasks = await Task.find().where('proyecto').equals(project._id).exec();
-
-    const response = {
-        project,
-        tasks
-    }
-
-    res.json(response);
-}
+    res.json(project);
+};
 
 const editProject = async(req, res) => {
     const id = req.params.id;
@@ -79,7 +76,7 @@ const editProject = async(req, res) => {
     } catch (error) {
         return res.status(400).json({ msg: error.message });
     }
-}
+};
 
 const deleteProject = async(req, res) => {
     const id = req.params.id;
@@ -104,15 +101,11 @@ const deleteProject = async(req, res) => {
     await project.remove();
 
     res.json({ msg: 'Project deleted' });
-}
+};
 
-const addColaborator = async(req, res) => {
+const addColaborator = async(req, res) => {};
 
-}
-
-const deleteColaborator = async(req, res) => {
-
-}
+const deleteColaborator = async(req, res) => {};
 
 export {
     getProjects,
@@ -122,4 +115,4 @@ export {
     deleteProject,
     addColaborator,
     deleteColaborator,
-}
+};
