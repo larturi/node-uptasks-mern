@@ -1,13 +1,12 @@
-import Task from "../models/Task.js";
-import Project from "../models/Project.js";
+import Task from '../models/Task.js';
+import Project from '../models/Project.js';
 
 const getTasks = async(req, res) => {
     // const projects = await Project.find().where('creador').equals(req.user._id).exec();
     // res.json(projects);
-}
+};
 
 const newTask = async(req, res) => {
-
     const { proyecto } = req.body;
 
     if (proyecto.length != 24) {
@@ -32,11 +31,14 @@ const newTask = async(req, res) => {
 
     try {
         const taskSaved = await task.save();
+        // Almacenar el ID en el Proyecto
+        projectExists.tareas.push(taskSaved._id);
+        await projectExists.save();
         res.json(taskSaved);
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 const getTask = async(req, res) => {
     const id = req.params.id;
@@ -54,7 +56,7 @@ const getTask = async(req, res) => {
     }
 
     res.json(task);
-}
+};
 
 const editTask = async(req, res) => {
     const id = req.params.id;
@@ -82,7 +84,7 @@ const editTask = async(req, res) => {
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 const deleteTask = async(req, res) => {
     const id = req.params.id;
@@ -107,17 +109,8 @@ const deleteTask = async(req, res) => {
     await task.remove();
 
     res.json({ msg: 'Task deleted' });
-}
+};
 
-const changeState = async(req, res) => {
+const changeState = async(req, res) => {};
 
-}
-
-export {
-    getTasks,
-    newTask,
-    getTask,
-    editTask,
-    deleteTask,
-    changeState,
-}
+export { getTasks, newTask, getTask, editTask, deleteTask, changeState };
