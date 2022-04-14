@@ -31,7 +31,9 @@ const getProject = async(req, res) => {
         return res.status(404).json({ msg: error.message });
     }
 
-    const project = await Project.findById(id).populate('tareas');
+    // onst project = await Project.findById(id).populate('tareas');
+    const project = await Project.findById(id)
+        .populate({ path: 'tareas', options: { sort: { fechaEntrega: 1 } } }).exec();
 
     if (!project) {
         const error = new Error('Project not found');
