@@ -12,12 +12,11 @@ dotenv.config();
 connectDB();
 
 // CORS
-const whiteList = [
-    process.env.FRONTEND_URL
-];
+const whiteList = [process.env.FRONTEND_URL];
 const corsOptions = {
     origin: (origin, callback) => {
-        if (!origin) { //for bypassing postman req with  no origin
+        if (!origin) {
+            //for bypassing postman req with  no origin
             return callback(null, true);
         }
 
@@ -39,5 +38,5 @@ app.use('/api/tasks', taskRoutes);
 const port = process.env.PORT || 4000;
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.info(`Server running on port ${port}`);
 });

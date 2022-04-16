@@ -1,5 +1,5 @@
 import Project from '../models/Project.js';
-import Task from '../models/Task.js';
+import User from '../models/User.js';
 
 const getProjects = async(req, res) => {
     const projects = await Project.find()
@@ -27,21 +27,22 @@ const getProject = async(req, res) => {
     const id = req.params.id;
 
     if (id.length < 24) {
-        const error = new Error('Invalid id');
+        const error = new Error('invalid_id');
         return res.status(404).json({ msg: error.message });
     }
 
     // onst project = await Project.findById(id).populate('tareas');
     const project = await Project.findById(id)
-        .populate({ path: 'tareas', options: { sort: { fechaEntrega: 1 } } }).exec();
+        .populate({ path: 'tareas', options: { sort: { fechaEntrega: 1 } } })
+        .exec();
 
     if (!project) {
-        const error = new Error('Project not found');
+        const error = new Error('project_not_found');
         return res.status(404).json({ msg: error.message });
     }
 
     if (project.creador.toString() !== req.user._id.toString()) {
-        const error = new Error('Not authorized');
+        const error = new Error('not_authorized');
         return res.status(401).json({ msg: error.message });
     }
 
@@ -52,19 +53,19 @@ const editProject = async(req, res) => {
     const id = req.params.id;
 
     if (id.length < 24) {
-        const error = new Error('Invalid id');
+        const error = new Error('invalid_id');
         return res.status(404).json({ msg: error.message });
     }
 
     const project = await Project.findById(id);
 
     if (!project) {
-        const error = new Error('Project not found');
+        const error = new Error('project_not_found');
         return res.status(404).json({ msg: error.message });
     }
 
     if (project.creador.toString() !== req.user._id.toString()) {
-        const error = new Error('Not authorized');
+        const error = new Error('not_authorized');
         return res.status(401).json({ msg: error.message });
     }
 
@@ -85,19 +86,19 @@ const deleteProject = async(req, res) => {
     const id = req.params.id;
 
     if (id.length < 24) {
-        const error = new Error('Invalid id');
+        const error = new Error('invalid_id');
         return res.status(404).json({ msg: error.message });
     }
 
     const project = await Project.findById(id);
 
     if (!project) {
-        const error = new Error('Project not found');
+        const error = new Error('project_not_found');
         return res.status(404).json({ msg: error.message });
     }
 
     if (project.creador.toString() !== req.user._id.toString()) {
-        const error = new Error('Not authorized');
+        const error = new Error('not_authorized');
         return res.status(401).json({ msg: error.message });
     }
 
@@ -106,9 +107,57 @@ const deleteProject = async(req, res) => {
     res.json({ msg: 'Project deleted' });
 };
 
-const addColaborator = async(req, res) => {};
+const searchCollaborator = async(req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email }).select('email nombre _id');
 
-const deleteColaborator = async(req, res) => {};
+    if (!user) {
+        const error = new Error('user_not_found');
+        return res.status(404).json({ msg: error.message });
+    } else {
+        res.json(user);
+    }
+};
+
+const addCollaborator = async(req, res) => {
+    const proyecto = await Project.findById(req.params.id);
+
+    if (!proyecto) {
+        const error = new Error('project_not_found');
+        return res.status(404).json({ msg: error.message });
+    }
+
+    if (proyecto.creador.toString() !== req.user._id.toString()) {
+        const error = new Error('not_authorized');
+        return res.status(401).json({ msg: error.message });
+    }
+
+    const { email } = req.body;
+    const user = await User.findOne({ email }).select('email nombre _id');
+
+    if (!user) {
+        const error = new Error('user_not_found');
+        return res.status(404).json({ msg: error.message });
+    }
+
+    // El colaborador no es el creador del proyecto
+    if (proyecto.creador.toString() === user._id.toString()) {
+        const error = new Error('user_is_creator');
+        return res.status(400).json({ msg: error.message });
+    }
+
+    // El colaborador ya está en el proyecto
+    if (proyecto.colaboradores.includes(user._id)) {
+        const error = new Error('user_already_in_project');
+        return res.status(400).json({ msg: error.message });
+    }
+
+    proyecto.colaboradores.push(user._id);
+    await proyecto.save();
+    res.json({ msg: 'collaborator_added' });
+};
+
+const deleteCollaborator = async(req, res) => {};
 
 export {
     getProjects,
@@ -116,6 +165,7 @@ export {
     getProject,
     editProject,
     deleteProject,
-    addColaborator,
-    deleteColaborator,
+    addCollaborator,
+    deleteCollaborator,
+    searchCollaborator,
 };
