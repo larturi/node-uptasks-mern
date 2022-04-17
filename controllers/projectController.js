@@ -157,7 +157,23 @@ const addCollaborator = async(req, res) => {
     res.json({ msg: 'collaborator_added' });
 };
 
-const deleteCollaborator = async(req, res) => {};
+const deleteCollaborator = async(req, res) => {
+    const proyecto = await Project.findById(req.params.id);
+
+    if (!proyecto) {
+        const error = new Error('project_not_found');
+        return res.status(404).json({ msg: error.message });
+    }
+
+    if (proyecto.creador.toString() !== req.user._id.toString()) {
+        const error = new Error('not_authorized');
+        return res.status(401).json({ msg: error.message });
+    }
+
+    proyecto.colaboradores.pull(req.body.id);
+    await proyecto.save();
+    res.json({ msg: 'collaborator_removed' });
+};
 
 export {
     getProjects,
