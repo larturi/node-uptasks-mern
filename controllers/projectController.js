@@ -44,7 +44,12 @@ const getProject = async(req, res) => {
         return res.status(404).json({ msg: error.message });
     }
 
-    if (project.creador.toString() !== req.user._id.toString()) {
+    if (
+        project.creador.toString() !== req.user._id.toString() &&
+        !project.colaboradores.some((colaborador) => {
+            return colaborador._id.toString() === req.user._id.toString();
+        })
+    ) {
         const error = new Error('not_authorized');
         return res.status(401).json({ msg: error.message });
     }
