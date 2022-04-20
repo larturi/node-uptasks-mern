@@ -2,9 +2,12 @@ import Project from '../models/Project.js';
 import User from '../models/User.js';
 
 const getProjects = async(req, res) => {
-    const projects = await Project.find()
-        .where('creador')
-        .equals(req.user._id)
+    const projects = await Project.find({
+            $or: [
+                { colaboradores: { $in: req.user } },
+                { creador: { $in: req.user } },
+            ],
+        })
         .select('-tareas')
         .sort({ createdAt: -1 })
         .exec();
