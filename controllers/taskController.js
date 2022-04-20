@@ -111,6 +111,35 @@ const deleteTask = async(req, res) => {
     res.json({ msg: 'Task deleted' });
 };
 
-const changeState = async(req, res) => {};
+const changeState = async(req, res) => {
+    const id = req.params.id;
+
+    if (id.length < 24) {
+        const error = new Error('Invalid id');
+        return res.status(404).json({ msg: error.message });
+    }
+
+    const task = await Task.findById(id).populate('proyecto');
+
+    if (!task) {
+        const error = new Error('Task not found');
+        return res.status(404).json({ msg: error.message });
+    }
+
+    if (
+        task.creador.toString() !== req.user._id.toString() &&
+        !task.proyecto.colaboradores.some(
+            (colaborador) => colaborador._id.toString() === req.user._id.toString()
+        )
+    ) {
+        const error = new Error('Not authorized');
+        return res.status(401).json({ msg: error.message });
+    }
+
+    task.estado = !task.estado;
+    await task.save();
+
+    res.json(task);
+};
 
 export { getTasks, newTask, getTask, editTask, deleteTask, changeState };
