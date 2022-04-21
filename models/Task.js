@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const taskSchema = new mongoose.Schema({
     nombre: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
     },
     descripcion: {
         type: String,
@@ -22,20 +22,24 @@ const taskSchema = new mongoose.Schema({
     prioridad: {
         type: String,
         required: true,
-        enum: ["Alta", "Media", "Baja"],
+        enum: ['Alta', 'Media', 'Baja'],
     },
     proyecto: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Project",
+        ref: 'Project',
         required: true,
+    },
+    completedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
     creador: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: 'User',
     },
 }, {
-    timestamps: true
+    timestamps: true,
 });
 
-const Task = mongoose.model("Task", taskSchema);
+const Task = mongoose.model('Task', taskSchema);
 export default Task;

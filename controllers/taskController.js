@@ -1,11 +1,6 @@
 import Task from '../models/Task.js';
 import Project from '../models/Project.js';
 
-const getTasks = async(req, res) => {
-    // const projects = await Project.find().where('creador').equals(req.user._id).exec();
-    // res.json(projects);
-};
-
 const newTask = async(req, res) => {
     const { proyecto } = req.body;
 
@@ -122,7 +117,9 @@ const changeState = async(req, res) => {
         return res.status(404).json({ msg: error.message });
     }
 
-    const task = await Task.findById(id).populate('proyecto');
+    const task = await Task.findById(id)
+        .populate('proyecto')
+        .populate('completedBy');
 
     if (!task) {
         const error = new Error('Task not found');
@@ -140,9 +137,14 @@ const changeState = async(req, res) => {
     }
 
     task.estado = !task.estado;
+    task.completedBy = req.user._id;
     await task.save();
 
-    res.json(task);
+    const taskUpdated = await Task.findById(id)
+        .populate('proyecto')
+        .populate('completedBy');
+
+    res.json(taskUpdated);
 };
 
-export { getTasks, newTask, getTask, editTask, deleteTask, changeState };
+export { newTask, getTask, editTask, deleteTask, changeState };
