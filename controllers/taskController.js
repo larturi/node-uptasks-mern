@@ -106,7 +106,10 @@ const deleteTask = async(req, res) => {
         return res.status(401).json({ msg: error.message });
     }
 
-    await task.remove();
+    const project = await Project.findById(task.proyecto);
+    project.tareas.pull(task._id);
+
+    await Promise.allSettled([await project.save(), await task.remove()]);
 
     res.json({ msg: 'Task deleted' });
 };
