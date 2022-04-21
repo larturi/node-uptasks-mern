@@ -29,7 +29,7 @@ const newProject = async(req, res) => {
 const getProject = async(req, res) => {
     const id = req.params.id;
 
-    if (id.length < 24) {
+    if (id.length !== 24) {
         const error = new Error('invalid_id');
         return res.status(404).json({ msg: error.message });
     }
