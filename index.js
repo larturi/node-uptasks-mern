@@ -51,5 +51,11 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-    console.log('New client connected');
+    socket.on('abrir_proyecto', (projectId) => {
+        socket.join(projectId);
+    });
+
+    socket.on('newTask', (task) => {
+        socket.to(task.proyecto).emit('taskAdded', task);
+    });
 });
