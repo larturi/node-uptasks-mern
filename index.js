@@ -67,4 +67,8 @@ io.on('connection', (socket) => {
         console.log(task.proyecto._id);
         socket.to(task.proyecto._id).emit('taskEdited', task);
     });
+
+    socket.on('completeTask', (task) => {
+        socket.to(task.proyecto._id).emit('taskCompleted', task);
+    });
 });
