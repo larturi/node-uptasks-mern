@@ -2,8 +2,6 @@
 
 ## App de administracion de proyectos
 
----
-
 ### 🚀 Quick start
 
 #### Instalar dependencias
@@ -35,7 +33,5 @@ Copiar las de .env.template y crear el archivo.env
 ```bash
 npm run dev
 ```
-
----
 
 ##### Made with ❤️ by Leandro Arturi
